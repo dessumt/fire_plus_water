@@ -24,7 +24,7 @@ light_surf = pygame.transform.scale(light_surf, (WIDTH, HEIGHT))
 
 screen.fill((0,0,0))
 running = True
-mask = Mask('map2.png', (WIDTH-325, HEIGHT-215))
+mask = Mask('map.png', (WIDTH-325, HEIGHT-215))
 surf = pygame.Surface((WIDTH, HEIGHT))
 surf.set_colorkey((0,0,0))
 
