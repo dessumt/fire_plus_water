@@ -2,7 +2,7 @@
 import pygame
 from light import *
 from flame import *
-from character import *
+from Character import *
 from button import *
 
 
