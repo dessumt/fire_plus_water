@@ -16,8 +16,12 @@ class Mask:
         self.mask = pygame.mask.from_surface(self.image)
 
 
-def put_light_source():
-    pass
+def put_light_source(surf, mask, pos, color):
+    surf.fill((0,0,0,255))
+    surf.set_alpha(120)
+    cast_all_lights(surf, pos, mask, color)
+    surf.blit(light_surf, (pos[0]-WIDTH / 2, pos[1]-HEIGHT / 2))
+    # screen.blit(surf, (0,0))
 
 light_surf = pygame.image.load('light_mask.png').convert_alpha()
 light_surf = pygame.transform.scale(light_surf, (WIDTH, HEIGHT))
@@ -25,23 +29,38 @@ light_surf = pygame.transform.scale(light_surf, (WIDTH, HEIGHT))
 screen.fill((0,0,0))
 running = True
 mask = Mask('map.png', (WIDTH-325, HEIGHT-215))
+all_pos = [(100, 100), (200, 275), (350, 375)]
+flame = [Flame(pos[0], pos[1]) for pos in all_pos]
+motion = None
+character = Character()
 surf = pygame.Surface((WIDTH, HEIGHT))
 surf.set_colorkey((0,0,0))
 
 while running:
+    screen.fill((0,0,0))
+    surf = pygame.Surface((WIDTH, HEIGHT))
+    surf.set_colorkey((0,0,0))
+    color = character.collision(mask)
+    screen.blit(mask.image, mask.rect)
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             running = False
-    pos = pygame.mouse.get_pos()
-    surf.fill((0,0,0,255))
-    surf.set_alpha(200)
-    pos_in_mask = pos[0] - mask.rect.x, pos[1] - mask.rect.y
-    touching = mask.rect.collidepoint(*pos) and mask.mask.get_at(pos_in_mask)
-    # screen.fill(pygame.Color('red') if touching else pygame.Color('green'))
-    screen.blit(mask.image, mask.rect)
-    cast_all_lights(surf, pos, mask)
-    surf.blit(light_surf, (pos[0]-WIDTH / 2, pos[1]-HEIGHT / 2))
-    screen.blit(surf, (0,0))
-
+        elif e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_LEFT:
+                motion = 'LEFT'
+            elif e.key == pygame.K_RIGHT:
+                motion = 'RIGHT'
+            elif e.key == pygame.K_UP:
+                motion = 'UP'
+            elif e.key == pygame.K_DOWN:
+                motion = 'DOWN'
+        elif e.type == pygame.KEYUP:
+            motion = None
+    # screen.blit(mask.image, character)
+    for i in range(len(all_pos)):
+        put_light_source(surf, mask, all_pos[i], EMBIANT_COLOR[random.randint(1, 15)])
+        flame[i].draw_flame()
+    character.move(motion)
+    character.draw(surf, screen, color)
 
     pygame.display.update()
