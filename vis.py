@@ -1,8 +1,9 @@
 # огонь и вода
 import pygame
+from PIL import Image
 from light import *
 from flame import *
-from Character import *
+from Сharacter import *
 from button import *
 
 
@@ -23,6 +24,7 @@ class Mask:
         self.mask = pygame.mask.from_surface(self.image)
 
 
+
 def put_light_source(surf, mask, pos, color):
     surf.fill((0,0,0,255))
     surf.set_alpha(120)
@@ -38,18 +40,19 @@ light_surf = pygame.transform.scale(light_surf, (WIDTH, HEIGHT))
 screen.fill((0,0,0))
 running = True
 mask = Mask('map.png', (WIDTH, HEIGHT))
-all_pos = [(100, 100), (200, 275), (375, 375)]
+all_pos = [(100, 100), (500, 275), (600, 400)]
 flame = [Flame(pos[0], pos[1]) for pos in all_pos]
 motion = None
 character = Character()
 button_pos = (320, 417)
+platform_pos_standart = platform_pos = (35, 300)
+counter = 0
 
 
 while running:
     screen.fill((0,0,0))
     surf = pygame.Surface((WIDTH, HEIGHT))
     surf.set_colorkey((0,0,0))
-    color = character.collision(mask)
     screen.blit(mask.image, mask.rect)
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
@@ -57,12 +60,12 @@ while running:
         elif e.type == pygame.KEYDOWN:
             if e.key == pygame.K_LEFT:
                 motion = 'LEFT'
-            elif e.key == pygame.K_RIGHT:
+            if e.key == pygame.K_RIGHT:
                 motion = 'RIGHT'
-            elif e.key == pygame.K_UP:
+            if e.key == pygame.K_UP:
                 motion = 'UP'
-            elif e.key == pygame.K_DOWN:
-                motion = 'DOWN'
+            # elif e.key == pygame.K_DOWN:
+            #     motion = 'DOWN'
         elif e.type == pygame.KEYUP:
             motion = None
     # screen.blit(mask.image, character)
@@ -71,8 +74,14 @@ while running:
         flame[i].draw_flame()
 
     character.move(motion)
+    color = character.collision(mask)
+    character.isjump = False
     character.draw(surf, screen, color)
-    button = Button(button_pos, mask, screen)
-    button.is_button_pressed(character)
-
+    # button = Button(button_pos, mask, screen)
+    # button.is_button_pressed(character)
+    # platform = Platform(platform_pos, mask, screen, platform_pos_standart, counter)
+    # counter, platform_pos = platform.platform_move(button, character)
+    # if button.is_button_pressed(character):
+        # put_light_source(surf, mask, (platform_pos[0] + 40, platform_pos[1]+10), (0,100,0))
+    # pygame.draw.circle(screen, (255,255,255), (platform_pos[0] + 40, platform_pos[1]+10), 1)
     pygame.display.update()
